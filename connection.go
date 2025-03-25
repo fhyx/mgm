@@ -3,10 +3,11 @@ package mgm
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/kamva/mgm/v3/internal/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 var config *Config
@@ -37,12 +38,8 @@ func ctx() context.Context {
 
 // NewClient returns a new mongodb client.
 func NewClient(opts ...*options.ClientOptions) (*mongo.Client, error) {
-	client, err := mongo.NewClient(opts...)
+	client, err := mongo.Connect(context.Background(), opts...)
 	if err != nil {
-		return nil, err
-	}
-
-	if err = client.Connect(Ctx()); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +94,7 @@ func DefaultConfigs() (*Config, *mongo.Client, *mongo.Database, error) {
 	return config, client, db, nil
 }
 
-// defaultConf are the default configuration values when none are provided 
+// defaultConf are the default configuration values when none are provided
 // to the `SetDefaultConfig` method.
 func defaultConf() *Config {
 	return &Config{CtxTimeout: 10 * time.Second}
