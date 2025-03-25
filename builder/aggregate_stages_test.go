@@ -13,7 +13,7 @@ import (
 type TestLookupData struct {
 	inputs []any
 	result any
-	hasErr bool
+	hasErr bool //nolint
 }
 
 func TestGetNewOperator(t *testing.T) {
