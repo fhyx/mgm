@@ -7,7 +7,7 @@ import (
 )
 
 // Bucket function returns a mongo $bucket operator used in aggregations.
-func Bucket(groupBy, boundaries, def, output interface{}) Operator {
+func Bucket(groupBy, boundaries, def, output any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.GroupBy, groupBy)
@@ -19,7 +19,7 @@ func Bucket(groupBy, boundaries, def, output interface{}) Operator {
 }
 
 // BucketAuto function returns a mongo $bucketAuto operator used in aggregations.
-func BucketAuto(groupBy, buckets, output, granularity interface{}) Operator {
+func BucketAuto(groupBy, buckets, output, granularity any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.GroupBy, groupBy)
@@ -31,7 +31,7 @@ func BucketAuto(groupBy, buckets, output, granularity interface{}) Operator {
 }
 
 // CollStats function returns a mongo $collStats operator used in aggregations.
-func CollStats(latencyStats, storageStats, count interface{}) Operator {
+func CollStats(latencyStats, storageStats, count any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.LatencyStats, latencyStats)
@@ -42,7 +42,7 @@ func CollStats(latencyStats, storageStats, count interface{}) Operator {
 }
 
 // CurrentOp function returns a mongo $currentOp operator used in aggregations.
-func CurrentOp(allUsers, idleConnections, idleCursors, idleSessions, localOps interface{}) Operator {
+func CurrentOp(allUsers, idleConnections, idleCursors, idleSessions, localOps any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.AllUsers, allUsers)
@@ -58,7 +58,7 @@ func CurrentOp(allUsers, idleConnections, idleCursors, idleSessions, localOps in
 // will have too many params and do not make readable code.
 
 // Group function returns a mongo $group operator used in aggregations.
-func Group(ID interface{}, params bson.M) Operator {
+func Group(ID any, params bson.M) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.ID, ID)
@@ -71,7 +71,7 @@ func Group(ID interface{}, params bson.M) Operator {
 }
 
 // Lookup function returns a mongo $lookup operator used in aggregations.
-func Lookup(from, localField, foreignField, as interface{}) Operator {
+func Lookup(from, localField, foreignField, as any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.From, from)
@@ -83,7 +83,7 @@ func Lookup(from, localField, foreignField, as interface{}) Operator {
 }
 
 // UncorrelatedLookup function returns a mongo $lookup operator used in aggregations.
-func UncorrelatedLookup(from, let, pipeline, as interface{}) Operator {
+func UncorrelatedLookup(from, let, pipeline, as any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.From, from)
@@ -95,7 +95,7 @@ func UncorrelatedLookup(from, let, pipeline, as interface{}) Operator {
 }
 
 // Merge function returns a mongo $merge operator used in aggregations.
-func Merge(into, on, let, whenMatched, whenNotMatched interface{}) Operator {
+func Merge(into, on, let, whenMatched, whenNotMatched any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.Into, into)
@@ -108,7 +108,7 @@ func Merge(into, on, let, whenMatched, whenNotMatched interface{}) Operator {
 }
 
 // ReplaceRoot function returns a mongo $replaceRoot operator used in aggregations.
-func ReplaceRoot(newRoot interface{}) Operator {
+func ReplaceRoot(newRoot any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.NewRoot, newRoot)
@@ -117,7 +117,7 @@ func ReplaceRoot(newRoot interface{}) Operator {
 }
 
 // Sample function returns a mongo sample operator used in aggregations.
-func Sample(size interface{}) Operator {
+func Sample(size any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.Size, size)
@@ -126,7 +126,7 @@ func Sample(size interface{}) Operator {
 }
 
 // Unwind function returns a mongo $unwind operator used in aggregations.
-func Unwind(path, includeArrayIndex, preserveNullAndEmptyArrays interface{}) Operator {
+func Unwind(path, includeArrayIndex, preserveNullAndEmptyArrays any) Operator {
 	m := bson.M{}
 
 	appendIfHasVal(m, f.Path, path)

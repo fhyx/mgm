@@ -128,7 +128,7 @@ func TestCollection_SimpleAggregateFirst(t *testing.T) {
 	// We dont want to change document.
 	group := builder.Group("$_id", nil)
 
-	found, err := mgm.Coll(&Doc{}).SimpleAggregateFirst(&gotResult, []interface{}{group})
+	found, err := mgm.Coll(&Doc{}).SimpleAggregateFirst(&gotResult, []any{group})
 
 	assert.True(t, found)
 	util.AssertErrIsNil(t, err)
@@ -147,7 +147,7 @@ func TestCollection_SimpleAggregateFirstFalse(t *testing.T) {
 
 	var gotResult *Doc
 	match := bson.M{operator.Match: bson.M{"user_id": "unknown"}}
-	found, err := mgm.Coll(&Doc{}).SimpleAggregateFirst(gotResult, []interface{}{match})
+	found, err := mgm.Coll(&Doc{}).SimpleAggregateFirst(gotResult, []any{match})
 
 	assert.False(t, found)
 	util.AssertErrIsNil(t, err)
@@ -167,7 +167,7 @@ func TestCollection_SimpleAggregate(t *testing.T) {
 
 	project := bson.M{operator.Project: bson.M{"age": 0}}
 
-	err := mgm.Coll(&Doc{}).SimpleAggregate(&gotResult, []interface{}{group, project})
+	err := mgm.Coll(&Doc{}).SimpleAggregate(&gotResult, []any{group, project})
 
 	util.AssertErrIsNil(t, err)
 

@@ -1,17 +1,18 @@
 package builder_test
 
 import (
+	"testing"
+
 	"github.com/kamva/mgm/v3/builder"
 	"github.com/kamva/mgm/v3/field"
 	"github.com/kamva/mgm/v3/operator"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
-	"testing"
 )
 
 type TestLookupData struct {
-	inputs []interface{}
-	result interface{}
+	inputs []any
+	result any
 	hasErr bool
 }
 
@@ -24,7 +25,7 @@ func TestGetNewOperator(t *testing.T) {
 func TestBucket(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux"},
+			inputs: []any{"foo", "bar", "baz", "qux"},
 			result: builder.New(operator.Bucket, bson.M{
 				field.GroupBy:    "foo",
 				field.Boundaries: "bar",
@@ -42,7 +43,7 @@ func TestBucket(t *testing.T) {
 func TestBucketAuto(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux"},
+			inputs: []any{"foo", "bar", "baz", "qux"},
 			result: builder.New(operator.BucketAuto, bson.M{
 				field.GroupBy:     "foo",
 				field.Buckets:     "bar",
@@ -51,7 +52,7 @@ func TestBucketAuto(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{"foo", 5, nil, "qux"},
+			inputs: []any{"foo", 5, nil, "qux"},
 			result: builder.New(operator.BucketAuto, bson.M{
 				field.GroupBy:     "foo",
 				field.Buckets:     5,
@@ -69,7 +70,7 @@ func TestBucketAuto(t *testing.T) {
 func TestCollStats(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz"},
+			inputs: []any{"foo", "bar", "baz"},
 			result: builder.New(operator.CollStats, bson.M{
 				field.LatencyStats: "foo",
 				field.StorageStats: "bar",
@@ -77,7 +78,7 @@ func TestCollStats(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{nil, nil, bson.M{}},
+			inputs: []any{nil, nil, bson.M{}},
 			result: builder.New(operator.CollStats, bson.M{
 				field.Count: bson.M{},
 			}),
@@ -93,7 +94,7 @@ func TestCollStats(t *testing.T) {
 func TestCurrentOp(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux", "quux"},
+			inputs: []any{"foo", "bar", "baz", "qux", "quux"},
 			result: builder.New(operator.CurrentOp, bson.M{
 				field.AllUsers:        "foo",
 				field.IdleConnections: "bar",
@@ -103,7 +104,7 @@ func TestCurrentOp(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{true, nil, nil, true, nil},
+			inputs: []any{true, nil, nil, true, nil},
 			result: builder.New(operator.CurrentOp, bson.M{
 				field.AllUsers:     true,
 				field.IdleSessions: true,
@@ -121,7 +122,7 @@ func TestCurrentOp(t *testing.T) {
 func TestGroup(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", bson.M{"bar": "baz", "qux": "quux"}},
+			inputs: []any{"foo", bson.M{"bar": "baz", "qux": "quux"}},
 			result: builder.New(operator.Group, bson.M{
 				field.ID: "foo",
 				"bar":    "baz",
@@ -130,7 +131,7 @@ func TestGroup(t *testing.T) {
 		},
 
 		{
-			inputs: []interface{}{"foo", bson.M{}},
+			inputs: []any{"foo", bson.M{}},
 			result: builder.New(operator.Group, bson.M{
 				field.ID: "foo",
 			}),
@@ -146,7 +147,7 @@ func TestGroup(t *testing.T) {
 func TestLookup(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux"},
+			inputs: []any{"foo", "bar", "baz", "qux"},
 			result: builder.New(operator.Lookup, bson.M{
 				field.From:         "foo",
 				field.LocalField:   "bar",
@@ -155,7 +156,7 @@ func TestLookup(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{"foo", "bar", "baz", nil},
+			inputs: []any{"foo", "bar", "baz", nil},
 			result: builder.New(operator.Lookup, bson.M{
 				field.From:         "foo",
 				field.LocalField:   "bar",
@@ -173,7 +174,7 @@ func TestLookup(t *testing.T) {
 func TestUncorrelatedLookup(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux"},
+			inputs: []any{"foo", "bar", "baz", "qux"},
 			result: builder.New(operator.Lookup, bson.M{
 				field.From:     "foo",
 				field.Let:      "bar",
@@ -182,7 +183,7 @@ func TestUncorrelatedLookup(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{"foo", "bar", "baz", nil},
+			inputs: []any{"foo", "bar", "baz", nil},
 			result: builder.New(operator.Lookup, bson.M{
 				field.From:     "foo",
 				field.Let:      "bar",
@@ -200,7 +201,7 @@ func TestUncorrelatedLookup(t *testing.T) {
 func TestMerge(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux", "quux"},
+			inputs: []any{"foo", "bar", "baz", "qux", "quux"},
 			result: builder.New(operator.Merge, bson.M{
 				field.Into:           "foo",
 				field.On:             "bar",
@@ -210,7 +211,7 @@ func TestMerge(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{"myOutput", "_id", nil, "replace", "insert"},
+			inputs: []any{"myOutput", "_id", nil, "replace", "insert"},
 			result: builder.New(operator.Merge, bson.M{
 				field.Into:           "myOutput",
 				field.On:             "_id",
@@ -229,13 +230,13 @@ func TestMerge(t *testing.T) {
 func TestReplaceRoot(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo"},
+			inputs: []any{"foo"},
 			result: builder.New(operator.ReplaceRoot, bson.M{
 				field.NewRoot: "foo",
 			}),
 		},
 		{
-			inputs: []interface{}{"$name"},
+			inputs: []any{"$name"},
 			result: builder.New(operator.ReplaceRoot, bson.M{
 				field.NewRoot: "$name",
 			}),
@@ -251,7 +252,7 @@ func TestReplaceRoot(t *testing.T) {
 func TestSample(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{45},
+			inputs: []any{45},
 			result: builder.New(operator.Sample, bson.M{
 				field.Size: 45,
 			}),
@@ -267,7 +268,7 @@ func TestSample(t *testing.T) {
 func TestUnwind(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz"},
+			inputs: []any{"foo", "bar", "baz"},
 			result: builder.New(operator.Unwind, bson.M{
 				field.Path:                       "foo",
 				field.IncludeArrayIndex:          "bar",
@@ -275,7 +276,7 @@ func TestUnwind(t *testing.T) {
 			}),
 		},
 		{
-			inputs: []interface{}{"$sizes", nil, nil},
+			inputs: []any{"$sizes", nil, nil},
 			result: builder.New(operator.Unwind, bson.M{
 				field.Path: "$sizes",
 			}),
@@ -291,7 +292,7 @@ func TestUnwind(t *testing.T) {
 func TestGetSimpleMap(t *testing.T) {
 	dataItems := []TestLookupData{
 		{
-			inputs: []interface{}{"foo", "bar", "baz", "qux"},
+			inputs: []any{"foo", "bar", "baz", "qux"},
 			result: builder.S(
 				builder.New(operator.Lookup, bson.M{
 					field.From:     "foo",
@@ -302,7 +303,7 @@ func TestGetSimpleMap(t *testing.T) {
 			),
 		},
 		{
-			inputs: []interface{}{"foo", "bar", "baz", nil},
+			inputs: []any{"foo", "bar", "baz", nil},
 			result: builder.S(
 				builder.New(operator.Lookup, bson.M{
 					field.From:     "foo",

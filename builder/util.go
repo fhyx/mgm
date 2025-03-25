@@ -6,7 +6,7 @@ import (
 )
 
 // appendIfHasVal appends the provided key and value to the map if the value is not nil.
-func appendIfHasVal(m bson.M, key string, val interface{}) {
+func appendIfHasVal(m bson.M, key string, val any) {
 	if !util.IsNil(val) {
 		m[key] = val
 	}

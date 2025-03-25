@@ -1,11 +1,12 @@
 package mgm_test
 
 import (
+	"testing"
+
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/internal/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"testing"
 )
 
 func setupDefConnection() {
@@ -23,7 +24,7 @@ func resetCollection() {
 }
 
 func seed() {
-	docs := []interface{}{
+	docs := []any{
 		NewDoc("Ali", 24),
 		NewDoc("Mehran", 24),
 		NewDoc("Reza", 26),

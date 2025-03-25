@@ -20,7 +20,7 @@ type DateFields struct {
 
 // PrepareID method prepares the ID value to be used for filtering
 // e.g convert hex-string ID value to bson.ObjectId
-func (f *IDField) PrepareID(id interface{}) (interface{}, error) {
+func (f *IDField) PrepareID(id any) (any, error) {
 	if idStr, ok := id.(string); ok {
 		return primitive.ObjectIDFromHex(idStr)
 	}
@@ -30,12 +30,12 @@ func (f *IDField) PrepareID(id interface{}) (interface{}, error) {
 }
 
 // GetID method returns a model's ID
-func (f *IDField) GetID() interface{} {
+func (f *IDField) GetID() any {
 	return f.ID
 }
 
 // SetID sets the value of a model's ID field.
-func (f *IDField) SetID(id interface{}) {
+func (f *IDField) SetID(id any) {
 	f.ID = id.(primitive.ObjectID)
 }
 

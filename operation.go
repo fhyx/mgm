@@ -2,6 +2,7 @@ package mgm
 
 import (
 	"context"
+
 	"github.com/kamva/mgm/v3/field"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,7 +26,7 @@ func create(ctx context.Context, c *Collection, model Model, opts ...*options.In
 	return callToAfterCreateHooks(ctx, model)
 }
 
-func first(ctx context.Context, c *Collection, filter interface{}, model Model, opts ...*options.FindOneOptions) error {
+func first(ctx context.Context, c *Collection, filter any, model Model, opts ...*options.FindOneOptions) error {
 	return c.FindOne(ctx, filter, opts...).Decode(model)
 }
 
