@@ -32,8 +32,10 @@ func lookup() error {
 	pipeline := bson.A{
 		builder.S(builder.Lookup(authorColl.Name(), "author_id", field.ID, "author")),
 	}
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
-	cur, err := mgm.Coll(&book{}).Aggregate(mgm.Ctx(), pipeline)
+	cur, err := mgm.Coll(&book{}).Aggregate(ctx, pipeline)
 
 	if err != nil {
 		return err

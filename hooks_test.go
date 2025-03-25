@@ -3,13 +3,14 @@ package mgm_test
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/internal/util"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"testing"
 )
 
 type Person struct {
@@ -97,8 +98,11 @@ func TestReturnErrorInCreatingHook(t *testing.T) {
 	require.Equal(t, creatingErr, err, "Expected returning hook's error")
 	person.AssertExpectations(t)
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	// Expected do not inserting this model:
-	count, _ := mgm.Coll(person).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(person).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0))
 }
 
@@ -134,8 +138,11 @@ func TestReturnErrorInSavingHook(t *testing.T) {
 	require.Equal(t, savingErr, err, "Expected returning hook's error")
 	person.AssertExpectations(t)
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	// Expected do not inserting this model:
-	count, _ := mgm.Coll(person).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(person).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0))
 }
 
@@ -219,8 +226,11 @@ func TestReturnErrorInDeletingHook(t *testing.T) {
 	require.Equal(t, deletingErr, err, "Expected returning hook's error")
 	person.AssertExpectations(t)
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	// Expected do not delete this model:
-	count, _ := mgm.Coll(person).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(person).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(1), "Expected having one document,got ", count)
 }
 
@@ -239,8 +249,11 @@ func TestDeletingDocHooks(t *testing.T) {
 
 	person.AssertExpectations(t)
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	// Expected do not delete this model:
-	count, _ := mgm.Coll(person).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(person).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0), "Expected having no documents,got ", count)
 }
 
@@ -322,7 +335,8 @@ func TestReturnErrorInCreatingHook_Celebrity(t *testing.T) {
 	celebrity := NewCelebrity("Ali", 24)
 
 	// Set listeners to mocked hooks:
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 	celebrity.On("Creating", ctx).Return(creatingErr)
 
 	err := mgm.Coll(celebrity).CreateWithCtx(ctx, celebrity)
@@ -331,7 +345,7 @@ func TestReturnErrorInCreatingHook_Celebrity(t *testing.T) {
 	celebrity.AssertExpectations(t)
 
 	// Expected do not inserting this model:
-	count, _ := mgm.Coll(celebrity).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(celebrity).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0))
 }
 
@@ -342,7 +356,8 @@ func TestCreatingDocHooks_Celebrity(t *testing.T) {
 	celebrity := NewCelebrity("Ali", 24)
 
 	// Set listeners to mocked hooks:
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 	celebrity.On("Creating", ctx).Return(nil)
 	celebrity.On("Created", ctx).Return(nil)
 	celebrity.On("Saving", ctx).Return(nil)
@@ -360,7 +375,8 @@ func TestReturnErrorInSavingHook_Celebrity(t *testing.T) {
 	celebrity := NewCelebrity("Ali", 24)
 
 	// Set listeners to mocked hooks:
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 	celebrity.On("Creating", ctx).Return(nil)
 	celebrity.On("Saving", ctx).Return(savingErr)
 
@@ -370,7 +386,7 @@ func TestReturnErrorInSavingHook_Celebrity(t *testing.T) {
 	celebrity.AssertExpectations(t)
 
 	// Expected do not inserting this model:
-	count, _ := mgm.Coll(celebrity).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(celebrity).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0))
 }
 
@@ -381,7 +397,8 @@ func TestSavingDocHooks_Celebrity(t *testing.T) {
 	celebrity := NewCelebrity("Ali", 24)
 
 	// Set listeners to mocked hooks:
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 	celebrity.On("Creating", ctx).Return(nil)
 	celebrity.On("Created", ctx).Return(nil)
 	celebrity.On("Saving", ctx).Return(nil)
@@ -393,7 +410,8 @@ func TestSavingDocHooks_Celebrity(t *testing.T) {
 func TestReturnErrorInUpdatingHook_Celebrity(t *testing.T) {
 	setupDefConnection()
 	resetCollection()
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
 	oldName := "Ali"
 	updatingErr := errors.New("test error")
@@ -419,7 +437,8 @@ func TestReturnErrorInUpdatingHook_Celebrity(t *testing.T) {
 func TestUpdatingDocHooks_Celebrity(t *testing.T) {
 	setupDefConnection()
 	resetCollection()
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
 	newName := "Mehran"
 	celebrity := NewCelebrity("Ali", 24)
@@ -446,7 +465,8 @@ func TestUpdatingDocHooks_Celebrity(t *testing.T) {
 func TestReturnErrorInDeletingHook_Celebrity(t *testing.T) {
 	setupDefConnection()
 	resetCollection()
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
 	deletingErr := errors.New("test error")
 	celebrity := NewCelebrity("Ali", 24)
@@ -462,14 +482,15 @@ func TestReturnErrorInDeletingHook_Celebrity(t *testing.T) {
 	celebrity.AssertExpectations(t)
 
 	// Expected do not delete this model:
-	count, _ := mgm.Coll(celebrity).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(celebrity).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(1), "Expected having one document,got ", count)
 }
 
 func TestDeletingDocHooks_Celebrity(t *testing.T) {
 	setupDefConnection()
 	resetCollection()
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
 	celebrity := NewCelebrity("Ali", 24)
 
@@ -484,6 +505,6 @@ func TestDeletingDocHooks_Celebrity(t *testing.T) {
 	celebrity.AssertExpectations(t)
 
 	// Expected do not delete this model:
-	count, _ := mgm.Coll(celebrity).CountDocuments(mgm.Ctx(), bson.M{})
+	count, _ := mgm.Coll(celebrity).CountDocuments(ctx, bson.M{})
 	require.Equal(t, count, int64(0), "Expected having no documents,got ", count)
 }

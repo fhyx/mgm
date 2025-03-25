@@ -1,15 +1,16 @@
 package mgm_test
 
 import (
+	"testing"
+
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"testing"
 )
 
-// Note: to run Transaction tests, the MongoDB daemon must run as replica set, not as a standalone daemon. 
+// Note: to run Transaction tests, the MongoDB daemon must run as replica set, not as a standalone daemon.
 // To convert it [see this](https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/)
 func TestTransactionCommit(t *testing.T) {
 	setupDefConnection()
@@ -28,8 +29,11 @@ func TestTransactionCommit(t *testing.T) {
 		return session.CommitTransaction(sc)
 	})
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	util.AssertErrIsNil(t, err)
-	count, err := mgm.Coll(d).CountDocuments(mgm.Ctx(), bson.M{})
+	count, err := mgm.Coll(d).CountDocuments(ctx, bson.M{})
 
 	util.AssertErrIsNil(t, err)
 	require.Equal(t, int64(1), count)
@@ -53,8 +57,11 @@ func TestTransactionAbort(t *testing.T) {
 		return session.AbortTransaction(sc)
 	})
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	util.AssertErrIsNil(t, err)
-	count, err := mgm.Coll(d).CountDocuments(mgm.Ctx(), bson.M{})
+	count, err := mgm.Coll(d).CountDocuments(ctx, bson.M{})
 
 	util.AssertErrIsNil(t, err)
 	require.Equal(t, int64(0), count)
@@ -65,9 +72,12 @@ func TestTransactionWithCtx(t *testing.T) {
 	resetCollection()
 	//seed()
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	d := &Doc{Name: "check", Age: 10}
 
-	err := mgm.TransactionWithCtx(mgm.Ctx(), func(session mongo.Session, sc mongo.SessionContext) error {
+	err := mgm.TransactionWithCtx(ctx, func(session mongo.Session, sc mongo.SessionContext) error {
 
 		err := mgm.Coll(d).CreateWithCtx(sc, d)
 
@@ -79,7 +89,7 @@ func TestTransactionWithCtx(t *testing.T) {
 	})
 
 	util.AssertErrIsNil(t, err)
-	count, err := mgm.Coll(d).CountDocuments(mgm.Ctx(), bson.M{})
+	count, err := mgm.Coll(d).CountDocuments(ctx, bson.M{})
 
 	util.AssertErrIsNil(t, err)
 	require.Equal(t, int64(0), count)

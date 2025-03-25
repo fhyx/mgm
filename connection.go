@@ -20,19 +20,20 @@ type Config struct {
 	CtxTimeout time.Duration
 }
 
-// NewCtx function creates and returns a new context with the specified timeout.
-func NewCtx(timeout time.Duration) context.Context {
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	return ctx
+// NewCtx returns a new Context that will be canceled automatically after the
+// specified timeout duration. The caller must call the returned cancel function
+// to release associated resources once the context is no longer needed.
+func NewCtx(timeout time.Duration) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	return ctx, cancel
 }
 
 // Ctx function creates and returns a new context with a default timeout value.
-func Ctx() context.Context {
+func Ctx() (context.Context, context.CancelFunc) {
 	return ctx()
 }
 
-func ctx() context.Context {
+func ctx() (context.Context, context.CancelFunc) {
 	return NewCtx(config.CtxTimeout)
 }
 

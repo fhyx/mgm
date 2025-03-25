@@ -2,6 +2,7 @@ package mgm
 
 import (
 	"context"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -10,7 +11,9 @@ type TransactionFunc func(session mongo.Session, sc mongo.SessionContext) error
 
 // Transaction creates a transaction with the default client.
 func Transaction(f TransactionFunc) error {
-	return TransactionWithClient(ctx(), client, f)
+	ctx, cancel := ctx()
+	defer cancel()
+	return TransactionWithClient(ctx, client, f)
 }
 
 // TransactionWithCtx creates a transaction with the given context and the default client.

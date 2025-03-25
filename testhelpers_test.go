@@ -16,8 +16,12 @@ func setupDefConnection() {
 }
 
 func resetCollection() {
-	_, err := mgm.Coll(&Doc{}).DeleteMany(mgm.Ctx(), bson.M{})
-	_, err2 := mgm.Coll(&Person{}).DeleteMany(mgm.Ctx(), bson.M{})
+
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
+	_, err := mgm.Coll(&Doc{}).DeleteMany(ctx, bson.M{})
+	_, err2 := mgm.Coll(&Person{}).DeleteMany(ctx, bson.M{})
 
 	util.PanicErr(err)
 	util.PanicErr(err2)
@@ -30,14 +34,22 @@ func seed() {
 		NewDoc("Reza", 26),
 		NewDoc("Omid", 27),
 	}
-	_, err := mgm.Coll(&Doc{}).InsertMany(mgm.Ctx(), docs)
+
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
+	_, err := mgm.Coll(&Doc{}).InsertMany(ctx, docs)
 
 	util.PanicErr(err)
 }
 
 func findDoc(t *testing.T) *Doc {
 	found := &Doc{}
-	util.AssertErrIsNil(t, mgm.Coll(found).FindOne(mgm.Ctx(), bson.M{}).Decode(found))
+
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
+	util.AssertErrIsNil(t, mgm.Coll(found).FindOne(ctx, bson.M{}).Decode(found))
 
 	return found
 }

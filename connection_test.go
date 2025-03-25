@@ -1,12 +1,13 @@
 package mgm_test
 
 import (
+	"testing"
+
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/internal/util"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"testing"
 )
 
 func TestSetupDefaultConnection(t *testing.T) {
@@ -28,7 +29,6 @@ func TestPanicOnGetCtx(t *testing.T) {
 		require.NotNil(t, recover(), "Getting context before set default config must panic")
 	}()
 
-	_ = mgm.Ctx()
 }
 
 func TestGetCtx(t *testing.T) {
@@ -39,7 +39,8 @@ func TestGetCtx(t *testing.T) {
 	// Setup connection
 	setupDefConnection()
 
-	ctx := mgm.Ctx()
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
 
 	_, ok := ctx.Deadline()
 	require.True(t, ok, "context should having deadline.")
@@ -61,8 +62,11 @@ func TestGetNewClient(t *testing.T) {
 	client, err := mgm.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	util.AssertErrIsNil(t, err)
 
+	ctx, cancel := mgm.Ctx()
+	defer cancel()
+
 	// Check client connection:
-	err = client.Ping(mgm.Ctx(), readpref.Primary())
+	err = client.Ping(ctx, readpref.Primary())
 	util.AssertErrIsNil(t, err)
 
 	// Get New Collection:

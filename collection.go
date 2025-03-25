@@ -19,7 +19,9 @@ type Collection struct {
 // The id field can be any value that if passed to the `PrepareID` method, it returns
 // a valid ID (e.g string, bson.ObjectId).
 func (coll *Collection) FindByID(id any, model Model, opts ...*options.FindOneOptions) error {
-	return coll.FindByIDWithCtx(ctx(), id, model, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.FindByIDWithCtx(ctx, id, model, opts...)
 }
 
 // FindByIDWithCtx method finds a doc and decodes it to a model, otherwise returns an error.
@@ -37,7 +39,9 @@ func (coll *Collection) FindByIDWithCtx(ctx context.Context, id any, model Model
 
 // First method searches and returns the first document in the search results.
 func (coll *Collection) First(filter any, model Model, opts ...*options.FindOneOptions) error {
-	return coll.FirstWithCtx(ctx(), filter, model, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.FirstWithCtx(ctx, filter, model, opts...)
 }
 
 // FirstWithCtx method searches and returns the first document in the search results.
@@ -47,7 +51,9 @@ func (coll *Collection) FirstWithCtx(ctx context.Context, filter any, model Mode
 
 // Create method inserts a new model into the database.
 func (coll *Collection) Create(model Model, opts ...*options.InsertOneOptions) error {
-	return coll.CreateWithCtx(ctx(), model, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.CreateWithCtx(ctx, model, opts...)
 }
 
 // CreateWithCtx method inserts a new model into the database.
@@ -59,7 +65,9 @@ func (coll *Collection) CreateWithCtx(ctx context.Context, model Model, opts ...
 // Calling this method also invokes the model's mgm updating, updated,
 // saving, and saved hooks.
 func (coll *Collection) Update(model Model, opts ...*options.UpdateOptions) error {
-	return coll.UpdateWithCtx(ctx(), model, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.UpdateWithCtx(ctx, model, opts...)
 }
 
 // UpdateWithCtx function persists the changes made to a model to the database using the specified context.
@@ -73,7 +81,9 @@ func (coll *Collection) UpdateWithCtx(ctx context.Context, model Model, opts ...
 // To perform additional operations when deleting a model
 // you should use hooks rather than overriding this method.
 func (coll *Collection) Delete(model Model) error {
-	return del(ctx(), coll, model)
+	ctx, cancel := ctx()
+	defer cancel()
+	return del(ctx, coll, model)
 }
 
 // DeleteWithCtx method deletes a model (doc) from a collection using the specified context.
@@ -85,7 +95,9 @@ func (coll *Collection) DeleteWithCtx(ctx context.Context, model Model) error {
 
 // SimpleFind finds, decodes and returns the results.
 func (coll *Collection) SimpleFind(results any, filter any, opts ...*options.FindOptions) error {
-	return coll.SimpleFindWithCtx(ctx(), results, filter, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.SimpleFindWithCtx(ctx, results, filter, opts...)
 }
 
 // SimpleFindWithCtx finds, decodes and returns the results using the specified context.
@@ -105,7 +117,9 @@ func (coll *Collection) SimpleFindWithCtx(ctx context.Context, results any, filt
 
 // SimpleAggregateFirst is just same as SimpleAggregateFirstWithCtx, but doesn't get context param.
 func (coll *Collection) SimpleAggregateFirst(result any, stages []any, opts ...*options.AggregateOptions) (bool, error) {
-	return coll.SimpleAggregateFirstWithCtx(ctx(), result, stages, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.SimpleAggregateFirstWithCtx(ctx, result, stages, opts...)
 }
 
 // SimpleAggregateFirstWithCtx performs a simple aggregation, decodes the first aggregate result and returns it using the provided result parameter.
@@ -125,7 +139,9 @@ func (coll *Collection) SimpleAggregateFirstWithCtx(ctx context.Context, result 
 
 // SimpleAggregate is just same as SimpleAggregateWithCtx, but doesn't get context param.
 func (coll *Collection) SimpleAggregate(results any, stages []any, opts ...*options.AggregateOptions) error {
-	return coll.SimpleAggregateWithCtx(ctx(), results, stages, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.SimpleAggregateWithCtx(ctx, results, stages, opts...)
 }
 
 // SimpleAggregateWithCtx performs a simple aggregation, decodes the aggregate result and returns the list using the provided result parameter.
@@ -144,7 +160,9 @@ func (coll *Collection) SimpleAggregateWithCtx(ctx context.Context, results any,
 // SimpleAggregateCursor is just same as SimpleAggregateCursorWithCtx, but
 // doesn't get context.
 func (coll *Collection) SimpleAggregateCursor(stages []any, opts ...*options.AggregateOptions) (*mongo.Cursor, error) {
-	return coll.SimpleAggregateCursorWithCtx(ctx(), stages, opts...)
+	ctx, cancel := ctx()
+	defer cancel()
+	return coll.SimpleAggregateCursorWithCtx(ctx, stages, opts...)
 }
 
 // SimpleAggregateCursorWithCtx performs a simple aggregation and returns a cursor over the resulting documents.

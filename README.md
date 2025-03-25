@@ -196,14 +196,13 @@ func init() {
 }
 
 // To get the context, just call the Ctx() method, assign it to a variable
-ctx := mgm.Ctx()
+ctx,cancel := mgm.Ctx()
+defer cancel()
 
 // and use it
 coll := mgm.Coll(&Book{})
 coll.FindOne(ctx, bson.M{})
 
-// Or invoke Ctx() and use it directly
-coll.FindOne(mgm.Ctx(), bson.M{})
 ``` 
 
 
@@ -306,10 +305,13 @@ import (
    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+ctx, cancel := mgm.Ctx()
+defer cancel()
+
 // The Author model collection
 authorColl := mgm.Coll(&Author{})
 
-cur, err := mgm.Coll(&Book{}).Aggregate(mgm.Ctx(), A{
+cur, err := mgm.Coll(&Book{}).Aggregate(ctx, A{
     // The S function accepts operators as parameters and returns a bson.M type.
     builder.S(builder.Lookup(authorColl.Name(), "author_id", field.Id, "author")),
 })
@@ -326,10 +328,13 @@ import (
    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+ctx, cancel := mgm.Ctx()
+defer cancel()
+
 // Author model collection
 authorColl := mgm.Coll(&Author{})
 
-_, err := mgm.Coll(&Book{}).Aggregate(mgm.Ctx(), A{
+_, err := mgm.Coll(&Book{}).Aggregate(ctx, A{
     // S function get operators and return bson.M type.
     builder.S(builder.Lookup(authorColl.Name(), "author_id", field.Id, "author")),
     builder.S(builder.Group("pages", M{"books": M{operator.Push: M{"name": "$name", "author": "$author"}}})),
@@ -350,7 +355,7 @@ d := &Doc{Name: "Mehran", Age: 10}
 err := mgm.Transaction(func(session mongo.Session, sc mongo.SessionContext) error {
 
    // do not forget to pass the session's context to the collection methods.
-	err := mgm.Coll(d).CreateWithCtx(sc, d)
+	err := mgm.Coll(d).CreateWithCtx(ctx, sc, d)
 
 	if err != nil {
 		return err
@@ -385,14 +390,17 @@ import (
    "go.mongodb.org/mongo-driver/bson"
 )
 
+ctx, cancel := mgm.Ctx()
+defer cancel()
+
 // Instead of hard-coding mongo operators and fields
-_, _ = mgm.Coll(&Book{}).Aggregate(mgm.Ctx(), bson.A{
+_, _ = mgm.Coll(&Book{}).Aggregate(ctx, bson.A{
     bson.M{"$count": ""},
     bson.M{"$project": bson.M{"_id": 0}},
 })
 
 // Use the predefined operators and pipeline fields.
-_, _ = mgm.Coll(&Book{}).Aggregate(mgm.Ctx(), bson.A{
+_, _ = mgm.Coll(&Book{}).Aggregate(ctx, bson.A{
     bson.M{o.Count: ""},
     bson.M{o.Project: bson.M{f.Id: 0}},
 })
